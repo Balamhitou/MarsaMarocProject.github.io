@@ -1,70 +1,233 @@
-
 const _=require('lodash');
 const jwt = require('jsonwebtoken');
 const  bcrypt = require('bcryptjs');
 const mysql = require('mysql');
 const db = require('../configuration/config');
 
-
+//Pointage des vehicules.
 exports.CreateVoiture =  ((req,res)=>{
-    var body = _.pick(req.body,['VIN','Niveau','Ligne','Colonne']);
-    var now = new Date();
-    var jsonDate = now.toJSON();
-    var currentDate = new Date(jsonDate);
+    var body = _.pick(req.body,['VIN']);
+    // var now = new Date();
+    // var jsonDate = now.toJSON();
+    // var currentDate = new Date(jsonDate);
     
-    db.query('SELECT VIN FROM Vehicule WHERE VIN =?', [body.VIN],  (error,result)=>{
-    if(!error){
+    db.query('SELECT VIN,idVehicule,idCellule FROM vehicule WHERE VIN =?', [body.VIN],  (error,result)=>{
+    var id={...result};
+    if(error){
       console.log(error);
       }
-    if(result.length > 0){
-        return res.status(400).json({message :  "this car is alredy existed !!"});
-    }
-    else{
 
-     db.query('INSERT INTO cellule SET ?',{Niveau : body.Niveau, Ligne : body.Ligne, Colonne : body.Colonne} , (error, result)=>{
-      var obj = {...result};
+    else{
+    res.status(200).send(result);
+    console.log(result);
+    var chassis = id[0].VIN;
+    var voiture = id[0].idVehicule;
+    var cell =id[0].idCellule;
+    console.log(chassis,voiture,cell);
+    var etat = 'O';
+    db.query('UPDATE cellule SET Status=?  WHERE idCellule=?',[etat,cell],(error, result)=>{
         if(error){
           console.log(error);
         }
         else{
-          console.log(obj.insertId);
-          var idcell = obj.insertId;
-          res.send(result);
-          var values = [idcell,body.VIN,currentDate];
-          console.log(body.VIN);  
-          db.query('INSERT INTO vehicule (idCellule, VIN,Date_entree) VALUES(?,?,?)',values, (error, result)=>{
+          console.log(result);
+          db.query('SELECT Niveau,Ligne,Colonne FROM cellule WHERE idCellule=?',[cell],(error,result)=>{
             if(error){
-              console.log("the error is : ",error);
+              console.log(error);
             }
-            else {
+            else{
               console.log(result);
-              
+            
             }
           });
         }
       });
+    //  db.query('INSERT INTO cellule SET ?',{Niveau : body.Niveau, Ligne : body.Ligne, Colonne : body.Colonne,Status : etat} , (error, result)=>{
+    //   var obj = {...result};
+    //     if(error){
+    //       console.log(error);
+    //     }
+    //     else{
+    //       console.log(obj.insertId);
+    //       var idcell = obj.insertId;
+    //       res.send(result);
+    //       var values = [idcell,body.VIN,currentDate];
+    //       console.log(body.VIN);  
+    //       db.query('INSERT INTO vehicule (idCellule, VIN,Date_entree) VALUES(?,?,?)',values, (error, result)=>{
+    //         if(error){
+    //           console.log("the error is : ",error);
+    //         }
+    //         else {
+    //           console.log(result);
+              
+    //         }
+    //       });
+    //     }
+    //   });
     }
       });
     });
+      //Réservation des places 
+  exports.Reservation = ((req,res)=>{
+    var body = _.pick(req.body,['Niveau','Ligne','Colonne','Nconnaissement','Marque','Date_entree']);
+    var places=req.body.places;
+    var val=[body.Nconnaissement,body.Marque];
+    db.query('SELECT idVehicule FROM vehicule WHERE Nconnaissement=? AND Marque=? ',val, (error,result)=>{
+      var obje = {...result};     
+      if(error){
+        console.log(error);
+        }
+      else{
+        res.status(200).send(result);
+        let voitures=[];
+        for(i=0;i<=Object.keys(obje).length-1;i++){
+          let objet={...obje[i.toString()]};
+           voitures.push(objet.idVehicule);
+        }
+        console.log(voitures);
+        var j=0;
+        for(i=0; i<=places.length-1;i++){
+          var niveau = places[i].Niveau;
+          var ligne =places[i].Ligne;
+          var colonne = places[i].Colonne;
+          var  dateEntree =places[i].Date_entree;
+          console.log(dateEntree);
+          var etat = 'Résérvé';
+          var tab=[niveau,ligne,colonne,etat];
+          db.query('INSERT INTO cellule (Niveau,Ligne,Colonne,status) VALUES(?,?,?,?)',tab,(error,result)=>{
+            var ob={...result};
+             if(error){
+               console.log(error); 
+             }
+             else{
+               console.log(result);
+               var id =ob.insertId;
+               console.log(id);
+               var voit = voitures[j];
+               j++;
+               var valeur =[id, dateEntree,voit];
+               db.query('UPDATE vehicule SET idCellule=?,Date_entree=? WHERE idVehicule=? ',valeur, (error, result)=>{
+                  if(error){
+                    console.log(error);
+                  }
+                  else{
+                    console.log(result);
+                  }
+               });
+             }
+          });
+        }
+    }
+        });
+  
+      });  
 
-    //libération d'une voiture.
+   
+   //libérer des voitures
     exports.liberationVoiture = ((req,res)=>{
-      var body = _.pick(req.body,['VIN']);
-      var now = new Date();
-      var jsonDate = now.toJSON();
-      var  dateActuel= new Date(jsonDate);
-      console.log(dateActuel);
-      var valeur =[dateActuel,body.VIN];
-       db.query('UPDATE vehicule SET Date_sortie =? WHERE VIN= ?',valeur,(error, result)=>{
+      var body = _.pick(req.body,['Nconnaissement','Marque','Date_sortie']);
+      var liberer=req.body.places;
+      db.query('SELECT idCellule FROM vehicule WHERE Nconnaissement=? AND Marque=?',[body.Nconnaissement,body.Marque], (error,result)=>{
+        var obje = {...result};     
         if(error){
-          console.log("the error is : ",error);
-        }
-        else {
+          console.log(error);
+          }
+        else{
+          res.status(200).send(result);
+          var cell = obje['0'].idCellule;
+          // let cellules=[];
+          // for(i=0;i<=Object.keys(obje).length-1;i++){
+          //   let objet={...obje[i.toString()]};
+          //    cellules.push(objet.idCellule);
+          // }
+          //console.log(cellules);
+        //   var j=0;
+        //   for(i=0; i<=liberer.length-1;i++){
+        //  console.log(dateSortie);
+      var etat = 'L';
+        //        var  dateSortie=liberer[i].Date_sortie;
+            var tab=[body.Date_sortie,body.Nconnaissement];
+            db.query('UPDATE vehicule SET Date_sortie=? WHERE Nconnaissement= ? ',tab,(error,result)=>{
+              var ob={...result};
+               if(error){
+                 console.log(error); 
+               }
+               else{
+                 console.log(result);
+                //  var position = cellules[j];
+                //  j++;
+                 var valeur =[etat,cell];
+                 db.query('UPDATE cellule SET status =? WHERE idCellule= ?',valeur,(error, result)=>{
+                    if(error){
+                      console.log(error);
+                    }
+                    else{
+                      console.log(result);
+                    }
+                 });
+                 
+               }
+            });
+          }
+      
+          });
+    
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     //-------------------------------------------------------------------------------------- 
+      //libération d'une voiture.
+    exports.libererUneVoiture =((req,res)=>{
+      var body = _.pick(req.body,['VIN','Date_sortie']);
+      var valeur=[body.Date_sortie,body.VIN];
+       db.query('SELECT Date_sortie,idCellule FROM vehicule WHERE VIN=?',[body.VIN], (error, result)=>{
+         var obje= {...result};
+         if(error){
+           console.log("the error is : ",error);
+         }
+         if((obje['0'].Date_sortie)!='0000-00-00'){
+           console.log(obje['0'].Date_sortie);
+           return res.status(400).json({message :  "vous ne pouvez pas libérer cette voiture, elle est déja sortie !!"});
+         }
+         else{
            console.log(result);
-        }
+           db.query('UPDATE vehicule SET Date_sortie =? WHERE VIN= ?',valeur,(error, result)=>{
+             if(error){
+               console.log("the error is : ",error);
+             }
+             else {
+                console.log(result);
+                var cell =obje[0].idCellule;
+                var etat = 'L';
+                db.query('UPDATE cellule SET status =? WHERE idCellule= ?',[etat,cell],(error, result)=>{
+                 if(error){
+                   console.log("the error is : ",error);
+                 }
+                 else {
+                    console.log(result);
+                    
+                 }
+             
+            });
+         }
        });
+     }
+      });
      });
-     
+
+
    // Modifier Voiture
    exports.Service =((req,res)=>{
     var body = _.pick(req.body,['TypeService','VIN']);
@@ -102,3 +265,40 @@ exports.CreateVoiture =  ((req,res)=>{
         }
     });
    });
+
+   //get all 
+   exports.getAll =((req,res)=>{
+     var body=_.pick(req.body,['VIN']);
+     var val=req.params.VIN;
+     console.log(val);
+     db.query('SELECT * FROM vehicule WHERE VIN=?',val,(error,result)=>{
+        if(error){
+          console.log(error);
+        }
+        else{
+          res.status(200).send(result);
+        }
+     });
+   });
+
+
+      // l'essaie 
+      exports.dateEssaie=((req,res)=>{
+        var body = _.pick(req.body,['Date_entree','VIN']);
+        db.query('SELECT idVehicule FROM vehicule WHERE VIN =?',[body.VIN],(error,result)=>{
+          var id ={...result};
+       if(error){
+         console.log(error);
+       }
+       else{
+         console.log(result);
+         var idVoiture =id['0'].idVehicule;
+         db.query('UPDATE vehicule SET Date_entree=? WHERE idVehicule=?',[body.Date_entree,idVoiture],(error,result)=>{
+       if(error){
+         console.log(error);
+       }else{
+       res.status(200).send(result);
+         }});
+       }
+        });
+      });
