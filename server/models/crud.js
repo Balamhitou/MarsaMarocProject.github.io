@@ -11,7 +11,7 @@ exports.CreateVoiture =  ((req,res)=>{
     // var jsonDate = now.toJSON();
     // var currentDate = new Date(jsonDate);
     
-    db.query('SELECT VIN,idVehicule,idCellule FROM vehicule WHERE VIN =?', [body.VIN],  (error,result)=>{
+    db.query('SELECT VIN,idCellule FROM vehicule WHERE VIN =?', [body.VIN],  (error,result)=>{
     var id={...result};
     if(error){
       console.log(error);
@@ -21,9 +21,9 @@ exports.CreateVoiture =  ((req,res)=>{
     res.status(200).send(result);
     console.log(result);
     var chassis = id[0].VIN;
-    var voiture = id[0].idVehicule;
+   
     var cell =id[0].idCellule;
-    console.log(chassis,voiture,cell);
+    console.log(chassis,cell);
     var etat = 'O';
     db.query('UPDATE cellule SET Status=?  WHERE idCellule=?',[etat,cell],(error, result)=>{
         if(error){
@@ -37,6 +37,7 @@ exports.CreateVoiture =  ((req,res)=>{
             }
             else{
               console.log(result);
+              res.status(200).send(result);
             
             }
           });
@@ -92,7 +93,7 @@ exports.CreateVoiture =  ((req,res)=>{
           var colonne = places[i].Colonne;
           var  dateEntree =places[i].Date_entree;
           console.log(dateEntree);
-          var etat = 'Résérvé';
+          var etat = 'R';
           var tab=[niveau,ligne,colonne,etat];
           db.query('INSERT INTO cellule (Niveau,Ligne,Colonne,status) VALUES(?,?,?,?)',tab,(error,result)=>{
             var ob={...result};
@@ -111,7 +112,7 @@ exports.CreateVoiture =  ((req,res)=>{
                     console.log(error);
                   }
                   else{
-                    console.log(result);
+                   res.status(200).send(result);
                   }
                });
              }
@@ -163,6 +164,7 @@ exports.CreateVoiture =  ((req,res)=>{
                     }
                     else{
                       console.log(result);
+                      res.status(200).send(result);
                     }
                  });
                  
@@ -217,6 +219,7 @@ exports.CreateVoiture =  ((req,res)=>{
                  }
                  else {
                     console.log(result);
+                    res.status(200).send(result);
                     
                  }
              
@@ -238,8 +241,8 @@ exports.CreateVoiture =  ((req,res)=>{
          console.log("the error is: ", error);
         }
         else{
-          res.status(200).send(result);
-         // console.log(result);
+          
+        console.log(result);
           db.query('SELECT idVehicule FROM vehicule WHERE VIN=?',[body.VIN], (error, resulat)=>{
             var obbj ={...resulat};
              if(error){
@@ -257,6 +260,7 @@ exports.CreateVoiture =  ((req,res)=>{
                console.log("the error is : ",error);
               }
               else {
+                res.status(200).send(result);
                console.log(result);
               }
             });
@@ -268,7 +272,6 @@ exports.CreateVoiture =  ((req,res)=>{
 
    //get all 
    exports.getAll =((req,res)=>{
-     var body=_.pick(req.body,['VIN']);
      var val=req.params.VIN;
      console.log(val);
      db.query('SELECT * FROM vehicule WHERE VIN=?',val,(error,result)=>{
@@ -281,6 +284,43 @@ exports.CreateVoiture =  ((req,res)=>{
      });
    });
 
+   exports.getPlace =((req,res)=>{
+     var body= _.pick(req.body,['VIN']);
+     var val =[body.VIN];
+    console.log(val);
+    db.query('SELECT idCellule FROM vehicule WHERE VIN=?',val,(error,result)=>{
+      var obj={...result};
+       if(error){
+         console.log(error);
+         
+       }
+       else{
+         
+         console.log(result);
+         var cell = obj['0'].idCellule;
+         console.log(cell);
+         var valu=[cell];
+         db.query('SELECT Niveau, Ligne, Colonne FROM cellule WHERE idCellule=?',valu,(error,result)=>{
+          if(error){
+            console.log(error);
+          }
+          else{
+            res.status(200).send(result);
+            var etat='O';
+            var valeurs=[etat,cell]
+            db.query('UPDATE cellule SET status =? WHERE idCellule=?',valeurs,(error,result)=>{
+              if(error){
+                console.log(error);
+              }
+              else{
+                
+                console.log(result);
+              }});
+          }
+         }
+          ) }
+    });
+  });
 
       // l'essaie 
       exports.dateEssaie=((req,res)=>{

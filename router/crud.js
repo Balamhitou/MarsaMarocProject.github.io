@@ -8,6 +8,7 @@ router.post('/libereVoitures',crudModel.liberationVoiture);
 router.post('/libereUneVoiture',crudModel.libererUneVoiture);
 router.post('/Toservice',crudModel.Service);
 router.get('/getVoiture/:VIN',crudModel.getAll);
+router.post('/getPlace',crudModel.getPlace);
 router.post('/reservation',crudModel.Reservation);
 router.post('/essaie',crudModel.dateEssaie);
 
