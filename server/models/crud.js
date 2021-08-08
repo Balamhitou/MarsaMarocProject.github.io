@@ -136,6 +136,7 @@ exports.CreateVoiture =  ((req,res)=>{
         else{
           res.status(200).send(result);
           var cell = obje['0'].idCellule;
+          console.log(cell);
           // let cellules=[];
           // for(i=0;i<=Object.keys(obje).length-1;i++){
           //   let objet={...obje[i.toString()]};
@@ -154,7 +155,7 @@ exports.CreateVoiture =  ((req,res)=>{
                  console.log(error); 
                }
                else{
-                 console.log(result);
+                 console.log("sortie changed ",result);
                 //  var position = cellules[j];
                 //  j++;
                  var valeur =[etat,cell];
@@ -164,7 +165,6 @@ exports.CreateVoiture =  ((req,res)=>{
                     }
                     else{
                       console.log(result);
-                      res.status(200).send(result);
                     }
                  });
                  
@@ -193,7 +193,7 @@ exports.CreateVoiture =  ((req,res)=>{
       //libération d'une voiture.
     exports.libererUneVoiture =((req,res)=>{
       var body = _.pick(req.body,['VIN','Date_sortie']);
-      var valeur=[body.Date_sortie,body.VIN];
+      
        db.query('SELECT Date_sortie,idCellule FROM vehicule WHERE VIN=?',[body.VIN], (error, result)=>{
          var obje= {...result};
          if(error){
@@ -205,7 +205,9 @@ exports.CreateVoiture =  ((req,res)=>{
          }
          else{
            console.log(result);
-           db.query('UPDATE vehicule SET Date_sortie =? WHERE VIN= ?',valeur,(error, result)=>{
+           var valeur=[body.Date_sortie,body.VIN];
+           db.query('UPDATE vehicule SET Date_sortie=? WHERE VIN= ?',valeur,(error, result)=>{
+            console.log('mafhamtch mzn ',result);
              if(error){
                console.log("the error is : ",error);
              }
@@ -324,7 +326,7 @@ exports.CreateVoiture =  ((req,res)=>{
 
       // l'essaie 
       exports.dateEssaie=((req,res)=>{
-        var body = _.pick(req.body,['Date_entree','VIN']);
+        var body = _.pick(req.body,['Date_sortie','VIN']);
         db.query('SELECT idVehicule FROM vehicule WHERE VIN =?',[body.VIN],(error,result)=>{
           var id ={...result};
        if(error){
@@ -333,11 +335,12 @@ exports.CreateVoiture =  ((req,res)=>{
        else{
          console.log(result);
          var idVoiture =id['0'].idVehicule;
-         db.query('UPDATE vehicule SET Date_entree=? WHERE idVehicule=?',[body.Date_entree,idVoiture],(error,result)=>{
+         db.query('UPDATE vehicule SET Date_sortie=? WHERE idVehicule=?',[body.Date_sortie,idVoiture],(error,result)=>{
        if(error){
          console.log(error);
        }else{
        res.status(200).send(result);
+       console.log('changed');
          }});
        }
         });
