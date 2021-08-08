@@ -12,10 +12,10 @@ const Voiture = require('../router/crud');
 const avaries = require('../router/Sinistralités');
 const db = require('./configuration/config');
 
-
+const port=process.env.PORT || 3000;
 var app = express();
 app.use(bodyParser.json());
-var port=process.env.PORT || 3000;
+
 //connection to DB
 
 //Inscription et connexion (créer un utilisateur).
