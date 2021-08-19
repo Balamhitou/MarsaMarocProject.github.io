@@ -1,23 +1,18 @@
 const jwt = require('jsonwebtoken');
+const {user}=require('./../models/User');
 
 module.exports = ((req,res,next)=>{
-   var token = req.body.token;
-    if(token){
-       token = jwt.verify(token,'123abc',(err,decoded)=>{
-       if(err){
-    res.json({
-        message :"Invalid Token !"
-    });
-     }
-      else{
-       next();
-      }
-       });
-    }
-    else{
-    res.json({
-        message :" unthorized user!"
-    });
-
+   
+   try{
+    const token = req.body.headers.autorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, '123abc');
+    req.user =decodedToken;
+    next();
    }
-  });
+   catch(e){
+return res.status(401).json({
+    'message':"Invalid or expired  token provided !",
+    'error':e
+});
+   }
+})

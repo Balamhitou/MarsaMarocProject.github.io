@@ -52,16 +52,28 @@ exports.Manquants =((req,res)=>{
      }
      else{
       res.status(200).send(result);
-      console.log('id manquant :',obj['0'].insertId);
-      var idManq =obj['0'].insertId;
-      // db.query('INSERT INTO contenir (idManquant,idVehicule) VALUE(?,?)',[idManq,body.VIN],(error,result)=>{
-      //   if(error){
-      //     console.log(error);
-      //   }
-      //   else{
-      //     console.log(result);
-      //   }
-      // });
+      console.log(result);
+      console.log('id manquant :',obj.insertId);
+      var idManq =obj.insertId;
+      db.query('SELECT idVehicule FROM vehicule WHERE VIN=?',[body.VIN],(error,result)=>{
+        var obV={...result};
+        if(error){
+          console.log(error);
+        }
+        else{
+          console.log(result);
+         var idV=obV['0'].idVehicule;
+          db.query('INSERT INTO contenir (idManquant,idVehicule) VALUE(?,?)',[idManq,idV],(error,result)=>{
+        if(error){
+          console.log(error);
+        }
+        else{
+          console.log(result);
+        }
+      });
+        }
+      });
+      
      }
   });
 });

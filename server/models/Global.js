@@ -4,70 +4,70 @@ const  bcrypt = require('bcryptjs');
 const mysql = require('mysql');
 const db = require('../configuration/config');
 
-//Pointage des vehicules.
-exports.CreateVoiture =  ((req,res)=>{
-    var body = _.pick(req.body,['VIN']);
-    // var now = new Date();
-    // var jsonDate = now.toJSON();
-    // var currentDate = new Date(jsonDate);
-    
-    db.query('SELECT VIN,idCellule FROM vehicule WHERE VIN =?', [body.VIN],  (error,result)=>{
-    var id={...result};
-    if(error){
-      console.log(error);
-      }
 
-    else{
-    res.status(200).send(result);
-    console.log(result);
-    var chassis = id[0].VIN;
+// exports.CreateVoiture =  ((req,res)=>{
+//     var body = _.pick(req.body,['VIN']);
+//     // var now = new Date();
+//     // var jsonDate = now.toJSON();
+//     // var currentDate = new Date(jsonDate);
+    
+//     db.query('SELECT VIN,idCellule FROM vehicule WHERE VIN =?', [body.VIN],  (error,result)=>{
+//     var id={...result};
+//     if(error){
+//       console.log(error);
+//       }
+
+//     else{
+//     res.status(200).send(result);
+//     console.log(result);
+//     var chassis = id[0].VIN;
    
-    var cell =id[0].idCellule;
-    console.log(chassis,cell);
-    var etat = 'O';
-    db.query('UPDATE cellule SET Status=?  WHERE idCellule=?',[etat,cell],(error, result)=>{
-        if(error){
-          console.log(error);
-        }
-        else{
-          console.log(result);
-          db.query('SELECT Niveau,Ligne,Colonne FROM cellule WHERE idCellule=?',[cell],(error,result)=>{
-            if(error){
-              console.log(error);
-            }
-            else{
-              console.log(result);
-              res.status(200).send(result);
+//     var cell =id[0].idCellule;
+//     console.log(chassis,cell);
+//     var etat = 'O';
+//     db.query('UPDATE cellule SET Status=?  WHERE idCellule=?',[etat,cell],(error, result)=>{
+//         if(error){
+//           console.log(error);
+//         }
+//         else{
+//           console.log(result);
+//           db.query('SELECT Niveau,Ligne,Colonne FROM cellule WHERE idCellule=?',[cell],(error,result)=>{
+//             if(error){
+//               console.log(error);
+//             }
+//             else{
+//               console.log(result);
+//               res.status(200).send(result);
             
-            }
-          });
-        }
-      });
-    //  db.query('INSERT INTO cellule SET ?',{Niveau : body.Niveau, Ligne : body.Ligne, Colonne : body.Colonne,Status : etat} , (error, result)=>{
-    //   var obj = {...result};
-    //     if(error){
-    //       console.log(error);
-    //     }
-    //     else{
-    //       console.log(obj.insertId);
-    //       var idcell = obj.insertId;
-    //       res.send(result);
-    //       var values = [idcell,body.VIN,currentDate];
-    //       console.log(body.VIN);  
-    //       db.query('INSERT INTO vehicule (idCellule, VIN,Date_entree) VALUES(?,?,?)',values, (error, result)=>{
-    //         if(error){
-    //           console.log("the error is : ",error);
-    //         }
-    //         else {
-    //           console.log(result);
+//             }
+//           });
+//         }
+//       });
+//     //  db.query('INSERT INTO cellule SET ?',{Niveau : body.Niveau, Ligne : body.Ligne, Colonne : body.Colonne,Status : etat} , (error, result)=>{
+//     //   var obj = {...result};
+//     //     if(error){
+//     //       console.log(error);
+//     //     }
+//     //     else{
+//     //       console.log(obj.insertId);
+//     //       var idcell = obj.insertId;
+//     //       res.send(result);
+//     //       var values = [idcell,body.VIN,currentDate];
+//     //       console.log(body.VIN);  
+//     //       db.query('INSERT INTO vehicule (idCellule, VIN,Date_entree) VALUES(?,?,?)',values, (error, result)=>{
+//     //         if(error){
+//     //           console.log("the error is : ",error);
+//     //         }
+//     //         else {
+//     //           console.log(result);
               
-    //         }
-    //       });
-    //     }
-    //   });
-    }
-      });
-    });
+//     //         }
+//     //       });
+//     //     }
+//     //   });
+//     }
+//       });
+//     });
       //Réservation des places 
   exports.Reservation = ((req,res)=>{
     var body = _.pick(req.body,['Niveau','Ligne','Colonne','Nconnaissement','Marque','Date_entree']);
@@ -79,7 +79,6 @@ exports.CreateVoiture =  ((req,res)=>{
         console.log(error);
         }
       else{
-        res.status(200).send(result);
         let voitures=[];
         for(i=0;i<=Object.keys(obje).length-1;i++){
           let objet={...obje[i.toString()]};
@@ -177,67 +176,12 @@ exports.CreateVoiture =  ((req,res)=>{
         });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-     //-------------------------------------------------------------------------------------- 
-      //libération d'une voiture.
-    exports.libererUneVoiture =((req,res)=>{
-      var body = _.pick(req.body,['VIN','Date_sortie']);
-      
-       db.query('SELECT Date_sortie,idCellule FROM vehicule WHERE VIN=?',[body.VIN], (error, result)=>{
-         var obje= {...result};
-         if(error){
-           console.log("the error is : ",error);
-         }
-         if((obje['0'].Date_sortie)!='0000-00-00'){
-           console.log(obje['0'].Date_sortie);
-           return res.status(400).json({message :  "vous ne pouvez pas libérer cette voiture, elle est déja sortie !!"});
-         }
-         else{
-           console.log(result);
-           var valeur=[body.Date_sortie,body.VIN];
-           db.query('UPDATE vehicule SET Date_sortie=? WHERE VIN= ?',valeur,(error, result)=>{
-            console.log('mafhamtch mzn ',result);
-             if(error){
-               console.log("the error is : ",error);
-             }
-             else {
-                console.log(result);
-                var cell =obje[0].idCellule;
-                var etat = 'L';
-                db.query('UPDATE cellule SET status =? WHERE idCellule= ?',[etat,cell],(error, result)=>{
-                 if(error){
-                   console.log("the error is : ",error);
-                 }
-                 else {
-                    console.log(result);
-                    res.status(200).send(result);
-                    
-                 }
-             
-            });
-         }
-       });
-     }
-      });
-     });
-
-
-   // Modifier Voiture
-   exports.Service =((req,res)=>{
-    var body = _.pick(req.body,['TypeService','VIN']);
-    var valeurs = [body.TypeService];
-    db.query('INSERT INTO service (TypeService) VALUES (?)',valeurs,(error,result)=>{
+   // Service à valeur ajouté.
+   exports.Service =((req,res,next)=>{
+    var body = _.pick(req.body,['TypeService','Nconnaissement','Date_Service']);
+    var valeurs = [body.TypeService,body.Date_Service];
+    db.query('INSERT INTO service (TypeService,Date) VALUES (?,?)',valeurs,(error,result)=>{
+      console.log(body.date);
       var obje= {...result};
         if(error){
          console.log("the error is: ", error);
@@ -245,7 +189,7 @@ exports.CreateVoiture =  ((req,res)=>{
         else{
           
         console.log(result);
-          db.query('SELECT idVehicule FROM vehicule WHERE VIN=?',[body.VIN], (error, resulat)=>{
+          db.query('SELECT idVehicule FROM vehicule WHERE Nconnaissement=?',[body.Nconnaissement], (error, resulat)=>{
             var obbj ={...resulat};
              if(error){
                console.log(error);
@@ -264,11 +208,15 @@ exports.CreateVoiture =  ((req,res)=>{
               else {
                 res.status(200).send(result);
                console.log(result);
+               next();
               }
             });
+           
              }
           });
+    
         }
+      
     });
    });
 
@@ -286,6 +234,8 @@ exports.CreateVoiture =  ((req,res)=>{
      });
    });
 
+   //afficher la position
+   //Pointage des vehicules.
    exports.getPlace =((req,res)=>{
      var body= _.pick(req.body,['VIN']);
      var val =[body.VIN];
@@ -323,24 +273,39 @@ exports.CreateVoiture =  ((req,res)=>{
           ) }
     });
   });
-
-      // l'essaie 
+ 
+      // l'essaie : liberer une voiture
       exports.dateEssaie=((req,res)=>{
         var body = _.pick(req.body,['Date_sortie','VIN']);
-        db.query('SELECT idVehicule FROM vehicule WHERE VIN =?',[body.VIN],(error,result)=>{
+        db.query('SELECT idVehicule,idCellule FROM vehicule WHERE VIN =?',[body.VIN],(error,result)=>{
           var id ={...result};
        if(error){
          console.log(error);
        }
        else{
          console.log(result);
-         var idVoiture =id['0'].idVehicule;
+         var idVoiture =id[0].idVehicule;
+         var idCell =id[0].idCellule;
+         console.log(idVoiture);
+         console.log(idCell);
          db.query('UPDATE vehicule SET Date_sortie=? WHERE idVehicule=?',[body.Date_sortie,idVoiture],(error,result)=>{
        if(error){
          console.log(error);
        }else{
-       res.status(200).send(result);
+      
        console.log('changed');
+       var etat = 'L';
+                db.query('UPDATE cellule SET status =? WHERE idCellule= ?',[etat,idCell],(error, result)=>{
+                 if(error){
+                   console.log("the error is : ",error);
+                 }
+                 else {
+                    console.log(result);
+                    res.status(200).send(result);
+                    
+                 }
+             
+            });
          }});
        }
         });

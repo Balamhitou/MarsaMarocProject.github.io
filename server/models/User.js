@@ -41,7 +41,7 @@ exports.login = async (req,res)=>{
        if(!result || !(await bcrypt.compare(req.body.Password, result[0].Password ))){
          res.status(401).json({message : "Email or password is incorrect"});
        }
-       if(result){
+       else if(result){
          const id =result[0].id;
          var token = jwt.sign({id},'123abc',{
            expiresIn: "1h"
