@@ -6,9 +6,9 @@ const db = require('../configuration/config');
 
 //Trafic Global : par mois et pour tous les clients :IMPORT
 exports.GlobalImport=((req,res)=>{
-var body=_.pick(req.body,['Month']);
-var valeur=[body.Month];
-db.query('SELECT MONTH(Date_entree) AS Mois, count(idVehicule) AS NombreVoiture FROM vehicule WHERE MONTH(Date_entree)=? GROUP BY MONTH(Date_entree) ',valeur,(error,result)=>{
+var body=_.pick(req.body,['Annee']);
+var valeur=[body.Annee];
+db.query('SELECT MONTH(Date_entree) AS name, count(idVehicule) AS value FROM vehicule WHERE year(Date_entree)=? GROUP BY MONTH(Date_entree) ',valeur,(error,result)=>{
 if(error){
     console.log(error);
     res.status(401).send(error);
@@ -18,11 +18,11 @@ else {
 }
 });
 });
-//Trafic Global : par mois et pour tous les clients: EXPORRT
+//Trafic Global : par Annee et pour tous les clients par rapport au mois : EXPORRT
 exports.GlobalExport=((req,res)=>{
-    var body=_.pick(req.body,['Month']);
-    var valeur=[body.Month];
-    db.query('SELECT MONTH(Date_sortie) AS Mois, count(idVehicule) AS NombreVoiture FROM vehicule WHERE MONTH(Date_sortie)=? GROUP BY MONTH(Date_sortie) ',valeur,(error,result)=>{
+    var body=_.pick(req.body,['Annee']);
+    var valeur=[body.Annee];
+    db.query('SELECT MONTH(Date_sortie) AS name, count(idVehicule) AS value FROM vehicule WHERE year(Date_sortie)=? GROUP BY MONTH(Date_sortie) ',valeur,(error,result)=>{
     if(error){
         console.log(error);
         res.status(401).send(error);
@@ -33,11 +33,11 @@ exports.GlobalExport=((req,res)=>{
     });
     });
 
-//Trafic par client : par mois  EXPORRT
+//Trafic par client : par mois et par année EXPORRT
 exports.ExportClient=((req,res)=>{
-    var body=_.pick(req.body,['Month','Client']);
-    var valeur=[body.Month,body.Client];
-    db.query('SELECT MONTH(Date_sortie) AS Mois, count(idVehicule) AS NombreVoiture FROM vehicule WHERE MONTH(Date_sortie)=? AND Client=? GROUP BY MONTH(Date_sortie) ',valeur,(error,result)=>{
+    var body=_.pick(req.body,['Month','Annee']);
+    var valeur=[body.Month,body.Annee];
+    db.query('SELECT Client AS name, count(idVehicule) AS value FROM vehicule WHERE MONTH(Date_sortie)=? AND year(Date_sortie)=? GROUP BY Client ',valeur,(error,result)=>{
     if(error){
         console.log(error);
         res.status(401).send(error);
@@ -47,11 +47,11 @@ exports.ExportClient=((req,res)=>{
     }
     });
     });
-    
+    //Trafic par client : par mois et par année IMPORT
     exports.ImportClient=((req,res)=>{
-        var body=_.pick(req.body,['Month','Client']);
-        var valeur=[body.Month,body.Client];
-        db.query('SELECT MONTH(Date_entree) AS Mois, count(idVehicule) AS NombreVoiture FROM vehicule WHERE MONTH(Date_entree)=? AND Client=? GROUP BY MONTH(Date_entree) ',valeur,(error,result)=>{
+        var body=_.pick(req.body,['Month','Annee']);
+        var valeur=[body.Month,body.Annee];
+        db.query('SELECT  Client AS name,count(idVehicule) AS value FROM vehicule WHERE MONTH(Date_entree)=?  AND year(Date_sortie)=? GROUP BY Client ',valeur,(error,result)=>{
         if(error){
             console.log(error);
             res.status(401).send(error);
@@ -64,9 +64,9 @@ exports.ExportClient=((req,res)=>{
 
     //délais de séjour par client.
     exports.delaiSejour=((req,res)=>{
-    var body=_.pick(req.body,['Client']);
-    var valeur=[body.Client];
-    db.query('SELECT DATEDIFF(Date_sortie,Date_entree) AS Délais_de_séjour FROM vehicule WHERE Client=? ',valeur,(error,result)=>{
+    var body=_.pick(req.body,['Month','Annee']);
+    var valeur=[body.Month,body.Annee];
+    db.query('SELECT DATEDIFF(Date_sortie,Date_entree) AS Délais_de_séjour,Client FROM vehicule WHERE MONTH(Date_entree)=? AND year(Date_entree)=? GROUP BY Client',valeur,(error,result)=>{
         if(error){
             console.log(error);
             res.status(401).send(error);
@@ -78,37 +78,8 @@ exports.ExportClient=((req,res)=>{
     });
 
     //Taux de remplissage : Occupé.
-    exports.occupation=((req,res)=>{
-        var body=_.pick(req.body,['Niveau','Date','Status']);
-        var valeur=[body.Niveau,body.Date];
-        db.query('SELECT COUNT(idVehicule) AS Nombre_Voiture FROM vehicule LEFT JOIN cellule ON cellule.idCellule=vehicule.idCellule WHERE cellule.Niveau=? AND cellule.Status="O" AND Date_entree<=? AND Date_sortie="0000-00-00"',valeur,(error,result)=>{
-            if(error){
-                console.log(error);
-                res.status(401).send(error);
-            }
-            else {
-                res.status(200).send(result);   
-            }
-        });
-    });
-
-
         //Taux de remplissage : Réservé.
-        exports.Reserveation=((req,res)=>{
-            var body=_.pick(req.body,['Niveau','Status']);
-            var valeur=[body.Niveau];
-            db.query('SELECT COUNT(idVehicule) AS Nombre_Voiture FROM vehicule LEFT JOIN cellule ON cellule.idCellule=vehicule.idCellule WHERE cellule.Niveau=? AND cellule.Status="R"',valeur,(error,result)=>{
-                if(error){
-                    console.log(error);
-                    res.status(401).send(error);
-                }
-                else {
-                    res.status(200).send(result);   
-                }
-            });
-        });
-
-        
+    
         //Taux de remplissage : Libre.
         exports.Liberation=((req,res)=>{
             var body=_.pick(req.body,['Niveau','Date']);
@@ -135,13 +106,22 @@ exports.ExportClient=((req,res)=>{
                             var occupe= objO['0'].Nombre_place_Occupee;
                             console.log(result);
                            db.query('SELECT (1000-(?+?)) AS Nombre_Place_Libre',[reserve,occupe],(error,result)=>{
+                            var objL ={...result};
                             if(error){
                                 console.log(error);
                              
                             }
                             else{
+                                var Libre =objL['0'].Nombre_Place_Libre;
                                 console.log(result);
-                                res.status(200).send(result);
+                                res.json({
+                                    
+                                        '0':{name : 'Occupe',value: occupe},
+                                        '1':{name : 'Reserve',value: reserve},
+                                        '2':{name : 'Libre',value: libre},
+                                    
+                                });
+
                             }
                            });
                         }

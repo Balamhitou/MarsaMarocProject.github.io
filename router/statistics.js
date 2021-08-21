@@ -9,8 +9,6 @@ router.post('/GlobalExport',staticsModel.GlobalExport);
 router.post('/ExportClient',staticsModel.ExportClient);
 router.post('/ImportClient',staticsModel.ImportClient);
 router.post('/sejour',staticsModel.delaiSejour);
-router.post('/occupation',staticsModel.occupation);
-router.post('/StatisticsReservation',staticsModel.Reserveation);
 router.post('/Statisticsliberation',staticsModel.Liberation);
 router.post('/StatisticsAvaries',staticsModel.Avaries);
 router.post('/StatisticsManquants',staticsModel.Manquants);
