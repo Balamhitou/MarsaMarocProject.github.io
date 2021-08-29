@@ -12,13 +12,14 @@ const Voiture = require('../router/GlobalRouter');
 const avaries = require('../router/Sinistralités');
 const db = require('./configuration/config');
 const Statistiques=require('../router/statistics');
-
+const cors=require('cors');
 // const fastcsv = require("fast-csv");
 // const fs = require("fs");
 
 
 const port=process.env.PORT || 3000;
 var app = express();
+app.use(cors());
 app.use(bodyParser.json());
 
 //connection to DB
