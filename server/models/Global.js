@@ -174,7 +174,43 @@ const db = require('../configuration/config');
           });
     
         });
+//Verification de pointage de sortie par date.
+exports.PointageSortie=((req,res)=>{
+var body= _.pick(req.body,['VIN','Date']);
+var valeurs = [body.VIN];
+db.query('SELECT DATE_FORMAT(Date_sortie, " %Y-%m-%d") as date FROM vehicule WHERE VIN=?',valeurs,(error,result)=>{
+  var obj={...result};
+if(error){
+  console.log(error);
+}
+// date_sortie
+// FROM vehicule WHERE VIN=?
+// else if(!result | body.Date==result['0'].date_sortie){
+//   res.status(401).json({message : "cette voiture n'est pas programmé de sortie pour cette date!"});
+// }
+else{
+  console.log(obj);
+  var dateSortie=obj['0'].date;
+  let finzleDate=dateSortie.replace(/ /g,"");
+  // var dateSortie=result['0'].date_sortie;
+//   const formatYmd = dateSortie.toISOString().slice(0, 10);
+// console.log(formatYmd);
 
+console.log(body.Date);
+console.log(finzleDate);
+  if(finzleDate==body.Date){
+    res.status(200).send(result);
+  }
+  else{
+   
+    res.status(400).json({message : "cette voiture n'est pas programmé de sortie pour cette date!"});
+  
+  }
+
+ 
+}
+});
+});
 
    // Service à valeur ajouté.
    exports.Service =((req,res,next)=>{

@@ -61,6 +61,33 @@ exports.ExportClient=((req,res)=>{
         }
         });
         });
+        //Statistiques :Nombre de Voitures entrant(Import) un mois Avant
+        exports.ImportMoisAvant=((req,res)=>{
+        db.query('SELECT count(idVehicule) AS value FROM vehicule WHERE MONTH(date_entree)=MONTH(CURRENT_DATE())-1',(error,result)=>{
+        if(error){
+            console.log(error);
+            res.status(401).send(error);
+        }
+        else {
+            res.status(200).send(result);
+        }
+        });
+        });
+
+            //Statistiques :Nombre de Voitures sortant(Export) un mois Avant
+            exports.ExportMoisAvant=((req,res)=>{
+                db.query('SELECT count(idVehicule) AS value FROM vehicule WHERE MONTH(date_sortie)=MONTH(CURRENT_DATE())-1',(error,result)=>{
+                if(error){
+                    console.log(error);
+                    res.status(401).send(error);
+                }
+                else {
+                    res.status(200).send(result);
+                }
+                });
+                });
+        
+
 
     //délais de séjour par client.
     exports.delaiSejour=((req,res)=>{
@@ -172,5 +199,137 @@ exports.Service=((req,res)=>{
         else {
             res.status(200).send(result);   
         }
+    });
+});
+    //Statistiques :Nombre de Voitures SVA pour chaque jour.
+    exports.SvaChaqueJour=((req,res)=>{
+        db.query('SELECT COUNT(vehicule.idVehicule) AS value FROM passer LEFT JOIN vehicule ON vehicule.idVehicule = passer.idVehicule LEFT JOIN service ON service.idService = passer.idService WHERE service.Date=CURRENT_DATE()',(error,result)=>{
+        if(error){
+            console.log(error);
+            res.status(401).send(error);
+        }
+        else {
+            res.status(200).send(result);
+        }
+        });
+        });
+
+
+//Statistiques pour le tableau.
+exports.Tableau=((req,res)=>{
+ var body=_.pick(req.body,['Niveau','date']);
+ var valeur=[body.Niveau,body.date];
+ db.query('SELECT Client, Marque, VIN FROM vehicule LEFT JOIN cellule ON cellule.idCellule = vehicule.idCellule WHERE    cellule.Niveau = ? AND cellule.Status = "O" AND Date_entree <=? AND Date_sortie = "0000-00-00"GROUP BY CLIENT',valeur,(error,result)=>{
+if(error){
+    console.log(error);
+}
+else{
+    res.status(200).send(result);
+}
+ });
+});
+
+
+//Statistiques des voitures  reservées et occupées en donnant le nombre de voiture par client.
+exports.DiagrammeRO=((req,res)=>{
+    var body=_.pick(req.body,['Niveau','date']);
+    var valeur=[body.Niveau,body.date];
+    db.query('SELECT Client, COUNT(vehicule.idVehicule) AS Nombre_place_Occupee, cellule.Status AS O FROM vehicule LEFT JOIN cellule ON cellule.idCellule = vehicule.idCellule WHERE    cellule.Niveau = ? AND cellule.Status = "O" AND Date_entree <=? AND Date_sortie = "0000-00-00"GROUP BY CLIENT',valeur,(error,result)=>{
+    var objO =result;
+        if(error){
+       console.log(error);
+   }
+   else{
+      
+       db.query('SELECT Client, COUNT(cellule.Status) AS Nombre_place_Reserve,cellule.Status AS R FROM vehicule LEFT JOIN cellule ON cellule.idCellule=vehicule.idCellule WHERE cellule.Niveau=? AND cellule.Status="R" GROUP BY Client',[body.Niveau],(error,resultat)=>{
+        var objR =resultat;
+        if(error){
+            console.log(error);
+        }
+        else{
+        //     console.log(result);
+        //     console.log(objO['0'].Nombre_place_Occupee);
+        //     console.log(objO['0'].O);
+        //     var occupe=objO['0'].O;
+        //     var reserve=objR['0'].R;
+        //    var carOccupe=objO['0'].Nombre_place_Occupee;
+        //    var carReserve=objR['0'].Nombre_place_Reserve;
+        //    var clientO=objO['0'].Client;
+        //    var clientR= objR['0'].Client;
+        //     res.json({
+        //         "name": occupe,
+        //         "series" :{
+        //           "0":{   "name" : clientO, "value": carOccupe}
+        //     }
+        //     },
+        //     {
+        //         // "name": reserve,
+        //         // "series" :[
+        //             "name" :clientR, "value": carReserve
+        //         // ]
+        //     }
+        //     );
+
+            let occ=objO.map(obj=>{
+                return {...obj}
+            });
+            let i=0;
+            let finaleObject={"0": occ[0]};
+            for(i=1;i<occ.length;i++){
+                let temp={};
+                temp[i]=occ[i];
+                finaleObject={...finaleObject,...temp}
+            }
+            let reserve=objR.map(obj=>{
+                return {...obj}
+            });
+ 
+            let j=0;
+            let finaleObjectR={"0": reserve[0]};
+            for(j=1;j<reserve.length;j++){
+                let temp={};
+                temp[j]=reserve[j];
+                finaleObjectR={...finaleObjectR,...temp}
+            }
+            let response={
+                "0":{
+                "name":"occuppée",
+                "series":finaleObject
+                },
+                "1":{
+                    "name":"reservée",
+                    "series":finaleObjectR  
+                }
+            }
+            res.json(response);
+
+            
+        }
+       });
+   }
+    });
+   });
+   //Statistiques nombre de voiture occupée pour tous les niveaux.
+   exports.TouteVoitures=((req,res)=>{
+    db.query('SELECT COUNT(vehicule.idVehicule) AS value FROM vehicule LEFT JOIN cellule ON cellule.idCellule = vehicule.idCellule WHERE cellule.Status = "O" AND Date_sortie = "0000-00-00"',(error,result)=>{
+    var objO =result;
+        if(error){
+       console.log(error);
+   }
+   else{
+       res.status(200).send(result);
+   }
+    });
+});
+//Statistiques : nombre de voitures pour toutes les voitures par marque occupée.
+exports.VoituresParMarque=((req,res)=>{
+    db.query('SELECT Marque AS name,COUNT(vehicule.idVehicule) AS value FROM vehicule LEFT JOIN cellule ON cellule.idCellule = vehicule.idCellule WHERE cellule.Status = "O" AND Date_sortie = "0000-00-00" GROUP BY Marque',(error,result)=>{
+    var objO =result;
+        if(error){
+       console.log(error);
+   }
+   else{
+       res.status(200).send(result);
+   }
     });
 });
