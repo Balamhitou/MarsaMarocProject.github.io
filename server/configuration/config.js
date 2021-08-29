@@ -10,10 +10,10 @@ const { json } = require('body-parser');
 
 
 var db= mysql.createConnection({
-    host : 'localhost',
-    user : 'root',
-    password : '',
-    database : 'marsamaroc'
+    host : 'sql11.freemysqlhosting.net',
+    user : 'sql11433562',
+    password : 'kYlkltzVdd',
+    database : 'sql11433562'
   });
   db.connect((error)=>{
    if(error){
