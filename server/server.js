@@ -19,7 +19,7 @@ const cors=require('cors');
 
 const port=process.env.PORT || 3000;
 var app = express();
-app.use(cors());
+app.use(cors({origin : 'http://localhost:4200'}));
 app.use(bodyParser.json());
 
 //connection to DB

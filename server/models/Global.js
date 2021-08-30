@@ -164,6 +164,7 @@ const db = require('../configuration/config');
                     }
                     else{
                       console.log(result);
+                      res.status(200).send(result);
                     }
                  });
                  
@@ -211,9 +212,21 @@ console.log(finzleDate);
 }
 });
 });
+//get all of the places.
+exports.AllPlaces=((req,res)=>{
+ var val=req.params.Niveau;
+ db.query('SELECT Niveau,Ligne,Colonne,Status FROM cellule WHERE Niveau=?',val,(error,result)=>{
+  if(error){
+    res.status(401).send(error);
+  }
+  else{
+    res.status(200).send(result);
+  }
+ });
+});
 
    // Service à valeur ajouté.
-   exports.Service =((req,res,next)=>{
+   exports.Service =((req,res)=>{
     var body = _.pick(req.body,['TypeService','Nconnaissement','Date_Service']);
     var valeurs = [body.TypeService,body.Date_Service];
     db.query('INSERT INTO service (TypeService,Date) VALUES (?,?)',valeurs,(error,result)=>{
@@ -239,12 +252,10 @@ console.log(finzleDate);
              var val = [idService,idvoiture];
             db.query('INSERT INTO passer (idService, idVehicule) VALUES(?,?)',val, (error, result)=>{
               if(error){
-               console.log("the error is : ",error);
+                res.status(401).send(error);
               }
               else {
                 res.status(200).send(result);
-               console.log(result);
-               next();
               }
             });
            
@@ -333,7 +344,7 @@ console.log(finzleDate);
        var etat = 'L';
                 db.query('UPDATE cellule SET status =? WHERE idCellule= ?',[etat,idCell],(error, result)=>{
                  if(error){
-                   console.log("the error is : ",error);
+                  res.status(401).send(error);
                  }
                  else {
                     console.log(result);
@@ -346,3 +357,51 @@ console.log(finzleDate);
        }
         });
       });
+      //Crétion d'escale.
+      exports.CreationEscale=((req,res)=>{
+       var body=_.pick(req.body,['NumEscale','navire','PostAccotage','DateArrivee']);
+       var valeur=[body.NumEscale,body.navire,body.PostAccotage,body.DateArrivee];
+       db.query('INSERT INTO Escale (NumEscale,navire, PostAccostaeQuai,Date_Arrivée) VALUES (?,?,?,?)',valeur,(error,result)=>{
+          if(error){
+            res.status(401).send(error);
+          }
+          else{
+            res.status(200).send(result);
+          }
+       });
+      });
+      //recuperer un tableau d'escale.
+      exports.TabEscale=((req,res)=>{
+         db.query('SELECT NumEscale,navire,PostAccostaeQuai,Date_Arrivée FROM Escale WHERE  MONTH(Date_Arrivée)=MONTH(CURRENT_DATE()) GROUP BY NumEscale',((error,result)=>{
+        if(result){
+          res.status(401).send(error);
+        }
+        else{
+          res.status(200).send(result);
+        }
+        })
+         )
+        });
+        //Affect idEscale to vehicule.
+        exports.AffectIdEscale=((req,res)=>{
+          var body=_.pick(req.body,['NumEscale']);
+          var val=[body.NumEscale];
+          db.query('SELECT idEscale FROM Escale WHERE NumEscale=?',val,(error,result)=>{
+          var ob={...result};
+          if(error){
+            console.log(error);
+          }
+          else{
+            var idEscale=ob['0'].idEscale;
+            db.query('INSERT INTO vehicule SET idEscale=?',idEscale,(error,resulat)=>{
+              if(error){
+                res.status(401).send(e);
+              }
+              else{
+                res.status(200).send(resulat); 
+              }
+            });
+          }
+          });
+        });
+      

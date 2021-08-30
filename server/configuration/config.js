@@ -26,3 +26,7 @@ var db= mysql.createConnection({
   });
 
   module.exports =db;
+  // host : 'sql11.freemysqlhosting.net',
+  // user : 'sql11433562',
+  // password : 'kYlkltzVdd',
+  // database : 'sql11433562'

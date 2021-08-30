@@ -16,7 +16,7 @@ router.post('/StatisticSVA',staticsModel.Service);
 router.post('/tableau',staticsModel.Tableau);
 router.post('/DiagrammeRO',staticsModel.DiagrammeRO);
 router.get('/toutesVoitures',staticsModel.TouteVoitures);
-router.post('/TsVoituresparMarqe',staticsModel.VoituresParMarque);
+router.get('/TsVoituresparMarqe',staticsModel.VoituresParMarque);
 router.get('/ImportMoisAvant',staticsModel.ImportMoisAvant);
 router.get('/ExportMoisAvant',staticsModel.ExportMoisAvant);
 router.get('/SVAChaqueJour',staticsModel.SvaChaqueJour);

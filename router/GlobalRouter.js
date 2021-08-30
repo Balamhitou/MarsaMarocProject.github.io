@@ -11,6 +11,10 @@ router.post('/getPlace',crudModel.getPlace);
 router.post('/reservation' ,crudModel.Reservation);
 router.post('/LibererUneVoiture',crudModel.dateEssaie);
 router.post('/verificationSortie',crudModel.PointageSortie);
+router.post('/escale',crudModel.CreationEscale);
+router.get('/EscaleCrees',crudModel.TabEscale);
+router.post('/affectIdEscale',crudModel.AffectIdEscale);
+router.get('/AllPlaces/:Niveau',crudModel.AllPlaces);
 
 
 module.exports = router;
