@@ -342,7 +342,7 @@ exports.AllPlaces=((req,res)=>{
       
        console.log('changed');
        var etat = 'L';
-                db.query('UPDATE cellule SET status =? WHERE idCellule= ?',[etat,idCell],(error, result)=>{
+                db.query('UPDATE cellule SET Status =? WHERE idCellule= ?',[etat,idCell],(error, result)=>{
                  if(error){
                   res.status(401).send(error);
                  }
