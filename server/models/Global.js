@@ -70,13 +70,14 @@ const db = require('../configuration/config');
 //     });
       //Réservation des places 
   exports.Reservation = ((req,res)=>{
+    var resultatF;
     var body = _.pick(req.body,['Niveau','Ligne','Colonne','Nconnaissement','Marque','Date_entree']);
     var places=req.body.places;
     var val=[body.Nconnaissement,body.Marque];
     db.query('SELECT idVehicule FROM vehicule WHERE Nconnaissement=? AND Marque=? ',val, (error,result)=>{
       var obje = {...result};     
       if(error){
-        console.log(error);
+
         }
       else{
         let voitures=[];
@@ -84,7 +85,7 @@ const db = require('../configuration/config');
           let objet={...obje[i.toString()]};
            voitures.push(objet.idVehicule);
         }
-        console.log(voitures);
+        
         var j=0;
         for(i=0; i<=places.length-1;i++){
           var niveau = places[i].Niveau;
@@ -98,26 +99,24 @@ const db = require('../configuration/config');
                console.log(error); 
              }
              else{
-               console.log(result);
+ 
                var id =ob.insertId;
-               console.log(id);
+               
                var voit = voitures[j];
                j++;
                var valeur =[id, body.Date_entree,voit];
-               db.query('UPDATE vehicule SET idCellule=?,Date_entree=? WHERE idVehicule=? ',valeur, (error, result)=>{
-                  if(error){
-                    console.log(error);
-                  }
-                  else{
-                   res.status(200).send(result);
-                  }
-               });
+               db.query('UPDATE vehicule SET idCellule=?,Date_entree=? WHERE idVehicule=? ',valeur,(error,resul)=>{
+                 if(resul)res.status(200).send(resul);
+                 else if(error)res.status(401).send(error);
+               })
+             
+              
              }
           });
         }
     }
         });
-  
+      
       });  
 
    
