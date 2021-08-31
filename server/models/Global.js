@@ -90,8 +90,6 @@ const db = require('../configuration/config');
           var niveau = places[i].Niveau;
           var ligne =places[i].Ligne;
           var colonne = places[i].Colonne;
-          var  dateEntree =places[i].Date_entree;
-          console.log(dateEntree);
           var etat = 'R';
           var tab=[niveau,ligne,colonne,etat];
           db.query('INSERT INTO cellule (Niveau,Ligne,Colonne,status) VALUES(?,?,?,?)',tab,(error,result)=>{
@@ -105,7 +103,7 @@ const db = require('../configuration/config');
                console.log(id);
                var voit = voitures[j];
                j++;
-               var valeur =[id, dateEntree,voit];
+               var valeur =[id, body.Date_entree,voit];
                db.query('UPDATE vehicule SET idCellule=?,Date_entree=? WHERE idVehicule=? ',valeur, (error, result)=>{
                   if(error){
                     console.log(error);
