@@ -4,10 +4,10 @@ const staticsModel=require('../server/models/statistics');
 const authenticate = require('../server/middelware/token_validation');
 
 
-router.post('/GlobalImport',staticsModel.GlobalImport);
-router.post('/GlobalExport',staticsModel.GlobalExport);
-router.post('/ExportClientAnnuel',staticsModel.ExportClientAnnuel);
-router.post('/ImportClientAnnuel',staticsModel.ImportClientAnnuel);
+router.post('/GlobalImport',staticsModel.GlobalImport);//done
+router.post('/GlobalExport',staticsModel.GlobalExport);//done
+router.post('/ExportClientAnnuel',staticsModel.ExportClientAnnuel);//done
+router.post('/ImportClientAnnuel',staticsModel.ImportClientAnnuel);//done
 router.post('/ExportClient',staticsModel.ExportClient);//done
 router.post('/ImportClient',staticsModel.ImportClient);//done
 router.post('/sejour',staticsModel.delaiSejour);

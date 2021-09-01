@@ -174,7 +174,7 @@ exports.ExportClient=((req,res)=>{
                                     
                                         '0':{name : 'Occupe',value: occupe},
                                         '1':{name : 'Reserve',value: reserve},
-                                        '2':{name : 'Libre',value: libre},
+                                        '2':{name : 'Libre',value: Libre},
                                     
                                 });
 
