@@ -4,7 +4,7 @@ const  bcrypt = require('bcryptjs');
 const mysql = require('mysql');
 const db = require('../configuration/config');
 
-//Trafic Global : par mois et pour tous les clients :IMPORT
+//Trafic Global : par Annee et pour tous les clients :IMPORT
 exports.GlobalImport=((req,res)=>{
 var body=_.pick(req.body,['Annee']);
 var valeur=[body.Annee];
@@ -32,7 +32,35 @@ exports.GlobalExport=((req,res)=>{
     }
     });
     });
+    //Trafic par client Annuel : par année EXPORRT
+    exports.ExportClientAnnuel=((req,res)=>{
+        var body=_.pick(req.body,['Annee']);
+        var valeur=[body.Annee];
+        db.query('SELECT Client AS name, count(idVehicule) AS value FROM vehicule WHERE  year(Date_sortie)=? GROUP BY Client ',valeur,(error,result)=>{
+        if(error){
+            console.log(error);
+            res.status(401).send(error);
+        }
+        else {
+            res.status(200).send(result);
+        }
+        });
+        });
 
+         //Trafic par client Annuel : par année IMPORT
+    exports.ImportClientAnnuel=((req,res)=>{
+        var body=_.pick(req.body,['Annee']);
+        var valeur=[body.Annee];
+        db.query('SELECT Client AS name, count(idVehicule) AS value FROM vehicule WHERE  year(Date_entree)=? GROUP BY Client ',valeur,(error,result)=>{
+        if(error){
+            console.log(error);
+            res.status(401).send(error);
+        }
+        else {
+            res.status(200).send(result);
+        }
+        });
+        });
 //Trafic par client : par mois et par année EXPORRT
 exports.ExportClient=((req,res)=>{
     var body=_.pick(req.body,['Month','Annee']);
@@ -74,6 +102,7 @@ exports.ExportClient=((req,res)=>{
         });
         });
 
+        
             //Statistiques :Nombre de Voitures sortant(Export) un mois Avant
             exports.ExportMoisAvant=((req,res)=>{
                 db.query('SELECT count(idVehicule) AS value FROM vehicule WHERE MONTH(date_sortie)=MONTH(CURRENT_DATE())-1',(error,result)=>{

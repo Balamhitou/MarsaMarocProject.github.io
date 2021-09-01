@@ -74,6 +74,22 @@ const db = require('../configuration/config');
     var body = _.pick(req.body,['Niveau','Ligne','Colonne','Nconnaissement','Marque','Date_entree']);
     var places=req.body.places;
     var val=[body.Nconnaissement,body.Marque];
+    db.query('SELECT cellule.Status FROM vehicule LEFT JOIN cellule ON cellule.idCellule=vehicule.idCellule WHERE Nconnaissement=?',[body.Nconnaissement],(error,result)=>{
+      var objh={...result};
+      var stat=objh['0'].Status;
+      if(error){
+       console.log(error);
+      }
+      if(stat=="R"){
+        res.status(400).json({
+          message :"ces places sont déjà résérvées !"
+        });
+      }
+      else{
+        console.log("resultat :",result);
+
+      }
+    });
     db.query('SELECT idVehicule FROM vehicule WHERE Nconnaissement=? AND Marque=? ',val, (error,result)=>{
       var obje = {...result};     
       if(error){
@@ -358,7 +374,7 @@ exports.AllPlaces=((req,res)=>{
       exports.CreationEscale=((req,res)=>{
        var body=_.pick(req.body,['NumEscale','navire','PostAccotage','DateArrivee']);
        var valeur=[body.NumEscale,body.navire,body.PostAccotage,body.DateArrivee];
-       db.query('INSERT INTO Escale (NumEscale,navire, PostAccostaeQuai,Date_Arrivée) VALUES (?,?,?,?)',valeur,(error,result)=>{
+       db.query('INSERT INTO escale (NumEscale,navire, PostAccostaeQuai,Date_Arrivée) VALUES (?,?,?,?)',valeur,(error,result)=>{
           if(error){
             res.status(401).send(error);
           }
@@ -369,8 +385,8 @@ exports.AllPlaces=((req,res)=>{
       });
       //recuperer un tableau d'escale.
       exports.TabEscale=((req,res)=>{
-         db.query('SELECT NumEscale,navire,PostAccostaeQuai,Date_Arrivée FROM Escale WHERE  MONTH(Date_Arrivée)=MONTH(CURRENT_DATE()) GROUP BY NumEscale',((error,result)=>{
-        if(result){
+         db.query('SELECT NumEscale,navire,PostAccostaeQuai,Date_Arrivee FROM escale WHERE  MONTH(Date_Arrivee)=MONTH(CURRENT_DATE()) GROUP BY NumEscale',((error,result)=>{
+        if(error){
           res.status(401).send(error);
         }
         else{
@@ -383,7 +399,7 @@ exports.AllPlaces=((req,res)=>{
         exports.AffectIdEscale=((req,res)=>{
           var body=_.pick(req.body,['NumEscale']);
           var val=[body.NumEscale];
-          db.query('SELECT idEscale FROM Escale WHERE NumEscale=?',val,(error,result)=>{
+          db.query('SELECT idEscale FROM escale WHERE NumEscale=?',val,(error,result)=>{
           var ob={...result};
           if(error){
             console.log(error);
