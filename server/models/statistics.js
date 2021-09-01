@@ -190,7 +190,7 @@ exports.ExportClient=((req,res)=>{
   exports.Avaries=((req,res)=>{
     var body=_.pick(req.body,['MONTH','Annee']);
     var valeur=[body.MONTH,body.Annee];
-    db.query('SELECT  vehicule.Marque, vehicule.Client, StatisticsManquants, avaries.type,avaries.responsable,avaries.description,avaries.zone  FROM avoir LEFT JOIN vehicule ON avoir.idVehicule=vehicule.idVehicule LEFT JOIN avaries ON avoir.idAvarie=avaries.idAvarie WHERE MONTH(vehicule.Date_entree)=? AND year(vehicule.Date_entree)=? GROUP BY vehicule.idVehicule',valeur,(error,result)=>{
+    db.query('SELECT  vehicule.Marque, vehicule.Client,vehicule.VIN , avaries.type,avaries.responsable,avaries.description,avaries.zone  FROM avoir LEFT JOIN vehicule ON avoir.idVehicule=vehicule.idVehicule LEFT JOIN avaries ON avoir.idAvarie=avaries.idAvarie WHERE MONTH(vehicule.Date_entree)=? AND year(vehicule.Date_entree)=? GROUP BY vehicule.idVehicule',valeur,(error,result)=>{
         if(error){
             console.log(error);
         }
