@@ -11,7 +11,7 @@ router.post('/ImportClientAnnuel',staticsModel.ImportClientAnnuel);//done
 router.post('/ExportClient',staticsModel.ExportClient);//done
 router.post('/ImportClient',staticsModel.ImportClient);//done
 router.post('/sejour',staticsModel.delaiSejour);
-router.post('/Statisticsliberation',staticsModel.Liberation);
+router.post('/Statisticsliberation',staticsModel.Liberation);//done
 router.post('/StatisticsAvaries',staticsModel.Avaries);
 router.post('/StatisticsManquants',staticsModel.Manquants);
 router.post('/StatisticSVA',staticsModel.Service);

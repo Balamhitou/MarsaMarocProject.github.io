@@ -122,7 +122,7 @@ exports.ExportClient=((req,res)=>{
     exports.delaiSejour=((req,res)=>{
     var body=_.pick(req.body,['Month','Annee']);
     var valeur=[body.Month,body.Annee];
-    db.query('SELECT DATEDIFF(Date_sortie,Date_entree) AS Délais_de_séjour,Client FROM vehicule WHERE MONTH(Date_entree)=? AND year(Date_entree)=? GROUP BY Client',valeur,(error,result)=>{
+    db.query('SELECT DATEDIFF(Date_sortie,Date_entree) AS Délais_de_séjour,Client FROM vehicule WHERE MONTH(Date_entree)=? AND year(Date_entree)=? AND Date_sortie!="0000-00-00" GROUP BY Client',valeur,(error,result)=>{
         if(error){
             console.log(error);
             res.status(401).send(error);
@@ -188,12 +188,11 @@ exports.ExportClient=((req,res)=>{
     
   //statistiques pour les voitures ont des avaries dans un mois par client et par marque.
   exports.Avaries=((req,res)=>{
-    var body=_.pick(req.body,['MONTH']);
-    var valeur=[body.MONTH];
-    db.query('SELECT COUNT(vehicule.idvehicule) AS Nombre_de_voiture, MONTH(vehicule.Date_entree) AS Mois, vehicule.Marque, vehicule.Client, avaries.* FROM avoir LEFT JOIN vehicule ON avoir.idVehicule=vehicule.idVehicule LEFT JOIN avaries ON avoir.idAvarie=avaries.idAvarie WHERE MONTH(vehicule.Date_entree)=? GROUP BY vehicule.idVehicule',valeur,(error,result)=>{
+    var body=_.pick(req.body,['MONTH','Annee']);
+    var valeur=[body.MONTH,body.Annee];
+    db.query('SELECT  vehicule.Marque, vehicule.Client, StatisticsManquants, avaries.type,avaries.responsable,avaries.description,avaries.zone  FROM avoir LEFT JOIN vehicule ON avoir.idVehicule=vehicule.idVehicule LEFT JOIN avaries ON avoir.idAvarie=avaries.idAvarie WHERE MONTH(vehicule.Date_entree)=? AND year(vehicule.Date_entree)=? GROUP BY vehicule.idVehicule',valeur,(error,result)=>{
         if(error){
             console.log(error);
-          
         }
         else {
             res.status(200).send(result);   
@@ -203,9 +202,9 @@ exports.ExportClient=((req,res)=>{
 
 //statistiques pour les voitures ont des accessoires manquants dans un mois par client et par marque.
 exports.Manquants=((req,res)=>{
-    var body=_.pick(req.body,['MONTH']);
-    var valeur=[body.MONTH];
-    db.query('SELECT COUNT(vehicule.idvehicule) AS Nombre_de_voiture, MONTH(vehicule.Date_entree) AS Mois, vehicule.Marque, vehicule.Client, manquant.* FROM contenir LEFT JOIN vehicule ON contenir.idVehicule=vehicule.idVehicule LEFT JOIN manquant ON contenir.idManquant=manquant.idManquant WHERE MONTH(vehicule.Date_entree)=? GROUP BY vehicule.idVehicule; ',valeur,(error,result)=>{
+    var body=_.pick(req.body,['MONTH','Annee']);
+    var valeur=[body.MONTH,body.Annee];
+    db.query('SELECT  vehicule.Marque, vehicule.Client,vehicule.VIN, manquant.Accessoire FROM contenir LEFT JOIN vehicule ON contenir.idVehicule=vehicule.idVehicule LEFT JOIN manquant ON contenir.idManquant=manquant.idManquant WHERE MONTH(vehicule.Date_entree)=? AND year(vehicule.Date_entree)=? GROUP BY vehicule.idVehicule; ',valeur,(error,result)=>{
         if(error){
             console.log(error);
           
@@ -218,9 +217,9 @@ exports.Manquants=((req,res)=>{
 
 //Statistiques pour les voitures qui ont été affectés dans les SVA en donnant le client et la marque et le mois.
 exports.Service=((req,res)=>{
-    var body=_.pick(req.body,['MONTH']);
-    var valeur=[body.MONTH];
-    db.query('SELECT COUNT(vehicule.idVehicule) AS Nombre_de_Voiture, MONTH(service.Date) AS Mois, vehicule.Marque, vehicule.Client, service.TypeService FROM passer LEFT JOIN vehicule ON vehicule.idVehicule = passer.idVehicule LEFT JOIN service ON service.idService = passer.idService WHERE MONTH(service.Date)=? GROUP BY vehicule.idVehicule; ',valeur,(error,result)=>{
+    var body=_.pick(req.body,['MONTH','Annee']);
+    var valeur=[body.MONTH,body.Annee];
+    db.query('SELECT  vehicule.Marque, vehicule.Client, vehicule.VIN, service.TypeService, DATE_FORMAT(Date, " %Y-%m-%d") AS Date FROM passer LEFT JOIN vehicule ON vehicule.idVehicule = passer.idVehicule LEFT JOIN service ON service.idService = passer.idService WHERE MONTH(service.Date)=? AND year(vehicule.Date_entree)=? GROUP BY vehicule.idVehicule; ',valeur,(error,result)=>{
         if(error){
             console.log(error);
           
@@ -244,7 +243,7 @@ exports.Service=((req,res)=>{
         });
 
 
-//Statistiques pour le tableau.
+//Statistiques pour le tableau pour chaque niveau.
 exports.Tableau=((req,res)=>{
  var body=_.pick(req.body,['Niveau','date']);
  var valeur=[body.Niveau,body.date];
