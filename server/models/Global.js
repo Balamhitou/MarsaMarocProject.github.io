@@ -251,26 +251,37 @@ exports.AllPlaces=((req,res)=>{
         else{
           
         console.log(result);
+   
           db.query('SELECT idVehicule FROM vehicule WHERE Nconnaissement=?',[body.Nconnaissement], (error, resulat)=>{
             var obbj ={...resulat};
              if(error){
-               console.log(error);
+              res.status(401).send(error);
              }
              else{
              //console.log(resulat);
-             console.log(obbj['0'].idVehicule);
-             var idvoiture=obbj['0'].idVehicule;
-             //console.log(obje.insertId);
-             var idService = obje.insertId;
-             var val = [idService,idvoiture];
-            db.query('INSERT INTO passer (idService, idVehicule) VALUES(?,?)',val, (error, result)=>{
-              if(error){
-                res.status(401).send(error);
-              }
-              else {
-                res.status(200).send(result);
-              }
-            });
+             
+            //  console.log(obbj['0'].idVehicule);
+            //  var idvoiture=obbj['0'].idVehicule;
+             let voitures=[];
+             var j=0;
+        for(i=0;i<=Object.keys(obbj).length-1;i++){
+          let objet={...obbj[i.toString()]};
+           voitures.push(objet.idVehicule);console.log("voiture",voitures);
+           var idService = obje.insertId;
+           var voit = voitures[j];
+           j++;
+           var val = [idService,voit];
+          db.query('INSERT INTO passer (idService, idVehicule) VALUES(?,?)',val, (error, result)=>{
+            if(error){
+             console.log(error);
+            }
+            else {
+              console.log(result);
+            }
+          });
+        }
+        res.status(200).send(result);
+             
            
              }
           });

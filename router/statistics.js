@@ -10,11 +10,11 @@ router.post('/ExportClientAnnuel',staticsModel.ExportClientAnnuel);//done
 router.post('/ImportClientAnnuel',staticsModel.ImportClientAnnuel);//done
 router.post('/ExportClient',staticsModel.ExportClient);//done
 router.post('/ImportClient',staticsModel.ImportClient);//done
-router.post('/sejour',staticsModel.delaiSejour);
+router.post('/sejour',staticsModel.delaiSejour);//done
 router.post('/Statisticsliberation',staticsModel.Liberation);//done
-router.post('/StatisticsAvaries',staticsModel.Avaries);
-router.post('/StatisticsManquants',staticsModel.Manquants);
-router.post('/StatisticSVA',staticsModel.Service);
+router.post('/StatisticsAvaries',staticsModel.Avaries);//done
+router.post('/StatisticsManquants',staticsModel.Manquants);//done
+router.post('/StatisticSVA',staticsModel.Service);//done
 router.post('/tableau',staticsModel.Tableau);
 router.post('/DiagrammeRO',staticsModel.DiagrammeRO);
 router.get('/toutesVoitures',staticsModel.TouteVoitures);//done
