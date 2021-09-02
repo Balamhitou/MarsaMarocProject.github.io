@@ -396,7 +396,7 @@ exports.AllPlaces=((req,res)=>{
       });
       //recuperer un tableau d'escale.
       exports.TabEscale=((req,res)=>{
-         db.query('SELECT NumEscale,navire,PostAccostaeQuai,Date_Arrivee FROM escale WHERE  MONTH(Date_Arrivee)=MONTH(CURRENT_DATE()) GROUP BY NumEscale',((error,result)=>{
+         db.query('SELECT NumEscale,navire,PostAccostaeQuai,Date_Arrivee,status FROM escale WHERE  MONTH(Date_Arrivee)=MONTH(CURRENT_DATE()) GROUP BY NumEscale',((error,result)=>{
         if(error){
           res.status(401).send(error);
         }
