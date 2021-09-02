@@ -385,7 +385,7 @@ exports.AllPlaces=((req,res)=>{
       exports.CreationEscale=((req,res)=>{
        var body=_.pick(req.body,['NumEscale','navire','PostAccotage','DateArrivee']);
        var valeur=[body.NumEscale,body.navire,body.PostAccotage,body.DateArrivee];
-       db.query('INSERT INTO escale (NumEscale,navire, PostAccostaeQuai,Date_Arrivée) VALUES (?,?,?,?)',valeur,(error,result)=>{
+       db.query('INSERT INTO escale (NumEscale,navire, PostAccostaeQuai,Date_Arrivee,status) VALUES (?,?,?,?,"inactif")',valeur,(error,result)=>{
           if(error){
             res.status(401).send(error);
           }

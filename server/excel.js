@@ -53,9 +53,15 @@ exports.readFile=((req,res)=>{
                         console.log(error);
                     }
                     else{
-                      console.log(result);
+                      db.query('UPDATE escale SET status="Actif"  WHERE NumEscale=?',[body.numEscale],(error,result)=>{
+                        if(error){
+                            console.log(error);
+                        }
+                        else{
+                       console.log(result);
+                        }
                     }
-                  });
+                  );
                 }
                 });
                
@@ -66,6 +72,8 @@ exports.readFile=((req,res)=>{
 
     
    
+});}
+res.status(200).send("done");
 });
 
 
