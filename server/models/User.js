@@ -37,31 +37,66 @@ exports.login = async (req,res)=>{
           message : "please enter email and password"
       })};
       db.query('SELECT * FROM utilisateur WHERE Email =?',[req.body.Email], async (error, result)=>{
-        
-       if(!result || !(await bcrypt.compare(req.body.Password, result[0].Password ))){
-         res.status(401).json({message : "Email or password is incorrect"});
-       }
-       else if(result){
-         const id =result[0].id;
-         var token = jwt.sign({id},'123abc',{
-           expiresIn: "1h"
-         });
-          return res.json({
-            message : "Authentification successful !",
-            token : token
-            
-          });
-          
-        }
-          else{
-            res.status(400).json({
-              message : "invalid credentials !!!!"
-            });
+        if(result[0]){
+          let resObj={...result[0]};
+          console.log(resObj);
+          if(!resObj || !(await bcrypt.compare(req.body.Password, resObj.Password ))){
+            res.status(401).json({message : "Email or password is incorrect"});
           }
+          else if(resObj){
+            const id =resObj.idUser;
+            console.log(id);
+            const email=resObj.Email;
+            var token = jwt.sign({id,access:"auth"},'123abc',{
+              expiresIn: "1h"
+            });
+            let auth='auth'
+            db.query("INSERT INTO tokens(token,access,idUser) VALUES (?,?,?)",[token,auth,id],(err,resu)=>{
+              if(err){
+               res.status(400).send(err)
+              }
+              else if(!res){
+                res.status(400).sned('Enable to add to databse');
+              }
+              else{
+               res.header("x-auth",token).status(200).json({
+                 email,
+                 token 
+               });
+              }
+          
+            })
+          
+             
+           }
+             else{
+               res.status(400).json({
+                 message : "invalid credentials !!!!"
+               });
+             }
+        }
+        else{
+          res.status(404).send('Email not found !');
+        }
+   
+
          });
       
     } catch (error){
       console.log(error);
     }
-    };
+  }
+  exports.logout=((req,res)=>{
+
+    console.log(req.user.token)
+    db.query("DELETE FROM tokens WHERE token=? AND idUser=?",[req.user.token,req.user.id],(err,result)=>{
+      if(err){
+        res.status(400).send();
+      }
+      else{
+        res.status(200).send('Disconnected !');
+      }
+    });
+  })
+    
     

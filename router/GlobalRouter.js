@@ -16,18 +16,18 @@ const fileStorageEngine =multer.diskStorage({
 const upload=multer({storage: fileStorageEngine });
 
 //router.post('/AddVoiture',crudModel.CreateVoiture);
-router.post('/libereVoitures',crudModel.liberationVoiture);//done
-router.post('/Toservice',crudModel.Service);//done
+router.post('/libereVoitures',authenticate,crudModel.liberationVoiture);//done
+router.post('/Toservice',authenticate,crudModel.Service);//done
 
-router.get('/getVoiture/:VIN' ,crudModel.getAll);
-router.post('/getPlace',crudModel.getPlace);
-router.post('/reservation' ,crudModel.Reservation);//done
-router.post('/LibererUneVoiture',crudModel.dateEssaie);//done
-router.post('/verificationSortie',crudModel.PointageSortie);
-router.post('/escale',crudModel.CreationEscale);
-router.get('/EscaleCrees',crudModel.TabEscale);//done
-router.get('/AllPlaces/:Niveau',crudModel.AllPlaces);//done
-router.post('/file',upload.single('filexlsx'),excelFile.readFile);//done
+router.get('/getVoiture/:VIN' ,authenticate,crudModel.getAll);
+router.post('/getPlace',authenticate,crudModel.getPlace);
+router.post('/reservation' ,authenticate,crudModel.Reservation);//done
+router.post('/LibererUneVoiture',authenticate,crudModel.dateEssaie);//done
+router.post('/verificationSortie',authenticate,crudModel.PointageSortie);
+router.post('/escale',authenticate,crudModel.CreationEscale);
+router.get('/EscaleCrees',authenticate,crudModel.TabEscale);//done
+router.get('/AllPlaces/:Niveau',authenticate,crudModel.AllPlaces);//done
+router.post('/file',authenticate,upload.single('filexlsx'),excelFile.readFile);//done
 
 
 module.exports = router;
