@@ -94,7 +94,7 @@ exports.login = async (req,res)=>{
         res.status(400).send();
       }
       else{
-        res.status(200).send('Disconnected !');
+        res.status(200).json({message : "disconnected !"});
       }
     });
   })

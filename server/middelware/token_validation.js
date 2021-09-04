@@ -23,7 +23,7 @@ console.log(decodedToken);
  
    db.query("SELECT * FROM utilisateur,tokens WHERE utilisateur.idUser=tokens.idUser AND tokens.access=? AND tokens.token=? and tokens.idUser=?",[decodedToken.access,token,decodedToken.id],(err,resul)=>{
       if(err){
-         res.status(401).send(err);
+         res.status(401).send("error in sql selection");
       }
       else if(!resul[0]){
          console.log(resul[0]);
