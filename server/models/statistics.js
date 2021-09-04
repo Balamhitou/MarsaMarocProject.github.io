@@ -262,41 +262,20 @@ else{
 exports.DiagrammeRO=((req,res)=>{
     var body=_.pick(req.body,['Niveau','date']);
     var valeur=[body.Niveau,body.date];
-    db.query('SELECT Client, COUNT(vehicule.idVehicule) AS Nombre_place_Occupee, cellule.Status AS O FROM vehicule LEFT JOIN cellule ON cellule.idCellule = vehicule.idCellule WHERE    cellule.Niveau = ? AND cellule.Status = "O" AND Date_entree <=? AND Date_sortie = "0000-00-00"GROUP BY CLIENT',valeur,(error,result)=>{
+    db.query('SELECT Client AS name, COUNT(vehicule.idVehicule) AS value FROM vehicule LEFT JOIN cellule ON cellule.idCellule = vehicule.idCellule WHERE    cellule.Niveau = ? AND cellule.Status = "O" AND Date_entree <=? AND Date_sortie = "0000-00-00"GROUP BY CLIENT',valeur,(error,result)=>{
     var objO =result;
         if(error){
        console.log(error);
    }
    else{
       
-       db.query('SELECT Client, COUNT(cellule.Status) AS Nombre_place_Reserve,cellule.Status AS R FROM vehicule LEFT JOIN cellule ON cellule.idCellule=vehicule.idCellule WHERE cellule.Niveau=? AND cellule.Status="R" GROUP BY Client',[body.Niveau],(error,resultat)=>{
+       db.query('SELECT Client AS name, COUNT(cellule.Status) AS value FROM vehicule LEFT JOIN cellule ON cellule.idCellule=vehicule.idCellule WHERE cellule.Niveau=? AND cellule.Status="R" GROUP BY Client',[body.Niveau],(error,resultat)=>{
         var objR =resultat;
         if(error){
             console.log(error);
         }
         else{
-        //     console.log(result);
-        //     console.log(objO['0'].Nombre_place_Occupee);
-        //     console.log(objO['0'].O);
-        //     var occupe=objO['0'].O;
-        //     var reserve=objR['0'].R;
-        //    var carOccupe=objO['0'].Nombre_place_Occupee;
-        //    var carReserve=objR['0'].Nombre_place_Reserve;
-        //    var clientO=objO['0'].Client;
-        //    var clientR= objR['0'].Client;
-        //     res.json({
-        //         "name": occupe,
-        //         "series" :{
-        //           "0":{   "name" : clientO, "value": carOccupe}
-        //     }
-        //     },
-        //     {
-        //         // "name": reserve,
-        //         // "series" :[
-        //             "name" :clientR, "value": carReserve
-        //         // ]
-        //     }
-        //     );
+       
 
             let occ=objO.map(obj=>{
                 return {...obj}
