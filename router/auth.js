@@ -3,10 +3,11 @@ const router = express.Router();
 const userModel = require('../server/models/User');
 const authenticate=require("../server/middelware/token_validation");
 const imageUp = require('../server/models/imageUpload');
+const path=require('path')
 let multer=require('multer');
 const storage=multer.diskStorage({
     destination:(req,file,callback)=>{
-        callback(null,'uploads')
+        callback(null,path.resolve('../public/uploads'))
     },
     filename:(req,file,callback)=>{
         callback(null,`profilePic_${file.originalname}`)
