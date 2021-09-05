@@ -25,7 +25,7 @@ router.post('/reservation' ,authenticate,crudModel.Reservation);//done
 router.post('/LibererUneVoiture',authenticate,crudModel.dateEssaie);//done
 router.post('/verificationSortie',authenticate,crudModel.PointageSortie);
 router.post('/escale',authenticate,crudModel.CreationEscale);
-router.get('/EscaleCrees',authenticate,crudModel.TabEscale);//done
+router.get('/EscaleCrees',crudModel.TabEscale);//done
 router.get('/AllPlaces/:Niveau',authenticate,crudModel.AllPlaces);//done
 router.post('/file',authenticate,upload.single('filexlsx'),excelFile.readFile);//done
 
