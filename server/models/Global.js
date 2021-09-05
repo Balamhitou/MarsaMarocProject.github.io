@@ -429,11 +429,14 @@ exports.AllPlaces=((req,res)=>{
           });
         });
         exports.GetUser=((req,res)=>{
-           db.query('SELECT * FROM utilisateur',(error,result)=>{
+          var id=req.user.id;
+          console.log(id);
+           db.query('SELECT * FROM utilisateur WHERE idUser = ?',[id],(error,result)=>{
              if(error){
-               res.status(401).send(error);
+               res.status(400).send(error);
+               console.log(error);
              }else{
-              res.status(200).send(result);
+              res.status(200).json({message:result});
              }
            });
         });

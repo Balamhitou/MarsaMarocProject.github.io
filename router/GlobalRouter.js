@@ -28,7 +28,7 @@ router.post('/escale',authenticate,crudModel.CreationEscale);
 router.get('/EscaleCrees',crudModel.TabEscale);//done
 router.get('/AllPlaces/:Niveau',authenticate,crudModel.AllPlaces);//done
 router.post('/file',authenticate,upload.single('filexlsx'),excelFile.readFile);//done
-router.post('/user',crudModel.GetUser);
+router.get('/user',authenticate,crudModel.GetUser);
 
 
 module.exports = router;
