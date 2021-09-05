@@ -428,4 +428,13 @@ exports.AllPlaces=((req,res)=>{
           }
           });
         });
+        exports.GetUser=((req,res)=>{
+           db.query('SELECT * FROM utilisateur',(error,result)=>{
+             if(error){
+               res.status(401).send(error);
+             }else{
+              res.status(200).send(result);
+             }
+           });
+        });
       
