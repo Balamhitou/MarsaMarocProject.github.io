@@ -7,7 +7,7 @@ const path=require('path')
 let multer=require('multer');
 const storage=multer.diskStorage({
     destination:(req,file,callback)=>{
-        callback(null,path.resolve('../public/uploads'))
+        callback(null,"public/uploads")
     },
     filename:(req,file,callback)=>{
         callback(null,`profilePic_${file.originalname}`)
