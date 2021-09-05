@@ -10,10 +10,10 @@ const { json } = require('body-parser');
 //vehicule_ibfk_2
 
 var db= mysql.createConnection({
-    host : 'localhost',
-    user : 'root',
-    password : '',  
-    database : 'marsamaroc'
+    host : 'sql11.freemysqlhosting.net',
+    user : 'sql11434727',
+    password : 'R3c9TWfXHI',  
+    database : 'sql11434727'
   });
   db.connect((error)=>{
    if(error){

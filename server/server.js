@@ -14,8 +14,7 @@ const db = require('./configuration/config');
 const Statistiques=require('../router/statistics');
 const excelFile=require('./excel');
 const cors=require('cors');
-// const fastcsv = require("fast-csv");
-// const fs = require("fs");
+
 
 
 const port=process.env.PORT || 3000;
