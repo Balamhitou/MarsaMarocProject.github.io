@@ -6,7 +6,7 @@ const imageUp = require('../server/models/imageUpload');
 let multer=require('multer');
 const storage=multer.diskStorage({
     destination:(req,file,callback)=>{
-        callback(null,'uploads')
+        callback(null,'public/uploads')
     },
     filename:(req,file,callback)=>{
         callback(null,`profilePic_${file.originalname}`)
@@ -16,6 +16,6 @@ var upload=multer({storage})
 router.post('/signup', userModel.signup);
 router.post('/login', userModel.login);
 router.get('/signout',authenticate,userModel.logout);
-router.post('/fileUpload',upload.single('file'),imageUp.imageUpload);
+router.post('/fileUpload',authenticate,upload.single('file'),imageUp.imageUpload);
 
 module.exports = router;
