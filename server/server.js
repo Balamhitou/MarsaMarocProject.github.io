@@ -14,7 +14,7 @@ const db = require('./configuration/config');
 const Statistiques=require('../router/statistics');
 const excelFile=require('./excel');
 const cors=require('cors');
-
+const path = require('path');
 
 
 const port=process.env.PORT || 3000;
@@ -25,6 +25,7 @@ app.use(function(req, res, next) {
   next();
 });
 app.use(bodyParser.json());
+app.use(express.static(path.resolve('../uploads')));
 
 //connection to DB
 
