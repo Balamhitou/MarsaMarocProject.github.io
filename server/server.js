@@ -25,7 +25,7 @@ app.use(function(req, res, next) {
   next();
 });
 app.use(bodyParser.json());
-app.use(express.static(path.resolve('../uploads')));
+app.use(express.static("uploads"));
 
 //connection to DB
 
