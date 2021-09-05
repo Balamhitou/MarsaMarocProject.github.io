@@ -9,7 +9,7 @@ exports.imageUpload=(req,res,next)=>{
             res.status(400).send(err)
         }
         else{
-            res.status(200).send(imagePath);
+            res.status(200).json({"url":imagePath});
         }
     })
 
