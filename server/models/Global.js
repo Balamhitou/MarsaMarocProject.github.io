@@ -440,4 +440,78 @@ exports.AllPlaces=((req,res)=>{
              }
            });
         });
+
+        exports.UpdateName=((req,res)=>{
+          var id=req.user.id;
+          var body=_.pick(req.body,['Nom']);
+          var vals=[body.Nom,id];
+          db.query('UPDATE utilisateur SET Nom=? WHERE idUser=?',vals,(error,result)=>{
+           if(error){
+   res.status(400).send(error);
+          }else{
+  res.status(200).send(result);
+           }
+          });
+        });
+  
+        exports.UpdatePrenom=((req,res)=>{
+          var id=req.user.id;
+          var body=_.pick(req.body,['Prenom']);
+          var vals=[body.Prenom,id];
+          db.query('UPDATE utilisateur SET Prenom=? WHERE idUser=?',vals,(error,result)=>{
+           if(error){
+   res.status(400).send(error);
+          }else{
+  res.status(200).send(result);
+           }
+          });
+        });
+  
+        exports.UpdateEmail=((req,res)=>{
+          var id=req.user.id;
+          var body=_.pick(req.body,['Email']);
+          var vals=[body.Email,id];
+          db.query('UPDATE utilisateur SET Email=? WHERE idUser=?',vals,(error,result)=>{
+           if(error){
+   res.status(400).send(error);
+          }else{
+  res.status(200).send(result);
+           }
+          });
+        });
+  
+        exports.UpdatePsw=((req,res)=>{
+          var id=req.user.id;
+          var body=_.pick(req.body,['passwordActuel','newPassword']);
+          // var vals=[body.Email,id];
+        
+        
+            bcrypt.hash(body.newPassword, 10).then(val=>{
+              console.log(val);
+            
+              db.query('UPDATE utilisateur SET Password=? WHERE idUser=?',[val,id],(error,result)=>{
+                if(error){
+        res.status(400).send(error);
+               }else{
+       res.status(200).send(result);
+                }
+            })
+           
+             });
+          
+       
+        });
+exports.UpdateFonction=((req,res)=>{
+  var id=req.user.id;
+  var fonction=req.body.fonction;
+  db.query('UPDATE utilisateur SET fonction=? WHERE idUser=?',[fonction,id],(error,resultat)=>{
+    if(error){
+      res.status(400).json({error})
+    }
+    else{
+      res.status(200).json({message:"Updated succesfully !"})
+    }
+  });
+
+})
       

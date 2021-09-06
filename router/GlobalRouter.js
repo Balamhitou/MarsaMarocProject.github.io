@@ -29,6 +29,10 @@ router.get('/EscaleCrees',crudModel.TabEscale);//done
 router.get('/AllPlaces/:Niveau',authenticate,crudModel.AllPlaces);//done
 router.post('/file',authenticate,upload.single('filexlsx'),excelFile.readFile);//done
 router.get('/user',authenticate,crudModel.GetUser);
-
+router.post('/updateName',authenticate,crudModel.UpdateName);
+router.post('/updatePrenom',authenticate,crudModel.UpdatePrenom);
+router.post('/updateEmail',authenticate,crudModel.UpdateEmail);
+router.post('/updatePswd',authenticate,crudModel.UpdatePsw);
+router.post('/updateFonction',authenticate,crudModel.UpdateFonction);
 
 module.exports = router;
