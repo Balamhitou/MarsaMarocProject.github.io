@@ -483,24 +483,42 @@ exports.AllPlaces=((req,res)=>{
         exports.UpdatePsw=((req,res)=>{
           var id=req.user.id;
           var body=_.pick(req.body,['passwordActuel','newPassword']);
-          // var vals=[body.Email,id];
-        
-        
-            bcrypt.hash(body.newPassword, 10).then(val=>{
-              console.log(val);
+          console.log(body.passwordActuel);
+          console.log(body.newPassword);
+          db.query('SELECT Password from utilisateur WHERE idUser=?',[id],(err,resul)=>{
+            let obj={...resul[0]}
             
-              db.query('UPDATE utilisateur SET Password=? WHERE idUser=?',[val,id],(error,result)=>{
-                if(error){
-        res.status(400).send(error);
-               }else{
-       res.status(200).send(result);
-                }
+            bcrypt.compare(body.passwordActuel,obj.Password)
+            .then(resultat=>{
+              console.log(resultat);
+              if(resultat){
+                     
+              bcrypt.hash(body.newPassword, 10).then(val=>{
+                console.log(val);
+              
+                db.query('UPDATE utilisateur SET Password=? WHERE idUser=?',[val,id],(error,result)=>{
+                  if(error){
+                res.status(400).json({error});
+                 }else{
+                res.status(200).json({message:"Updated Successfully !"});
+                  }
+              })
+              })
+            }
+            else{
+              res.status(401).send({error:'Le mot de passe actuel est incorrect ! '})
+            }
             })
+  
+            .catch(erreur=>{
+              res.status(500).send(erreur);
+            })
+          })
+        
            
              });
           
-       
-        });
+
 exports.UpdateFonction=((req,res)=>{
   var id=req.user.id;
   var fonction=req.body.fonction;
