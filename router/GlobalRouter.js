@@ -23,7 +23,7 @@ router.get('/getVoiture/:VIN' ,authenticate,crudModel.getAll);
 router.post('/getPlace',authenticate,crudModel.getPlace);
 router.post('/reservation' ,crudModel.Reservation);//done
 router.post('/LibererUneVoiture',authenticate,crudModel.dateEssaie);//done
-router.post('/verificationSortie',authenticate,crudModel.PointageSortie);
+router.post('/verificationSortie',crudModel.PointageSortie);
 router.post('/escale',authenticate,crudModel.CreationEscale);
 router.get('/EscaleCrees',crudModel.TabEscale);//done
 router.get('/AllPlaces/:Niveau',authenticate,crudModel.AllPlaces);//done

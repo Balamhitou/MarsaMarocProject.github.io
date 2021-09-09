@@ -154,7 +154,7 @@ const db = require('../configuration/config');
                  
                   
                  }
-              });
+              })
             }
            res.status(200).send("Inserted Successfully")
         }
@@ -243,7 +243,28 @@ else{
 console.log(body.Date);
 console.log(finzleDate);
   if(finzleDate==body.Date){
-    res.status(200).send(result);
+    db.query('SELECT idCellule FROM vehicule WHERE VIN =?',[body.VIN],(error,result)=>{
+  var id={...result};
+  if(error){
+    return res.status(404).send(error);
+  }
+  else{
+    var idCell=id['0'].idCellule;
+    var etat = 'L';
+    db.query('UPDATE cellule SET Status =? WHERE idCellule= ?',[etat,idCell],(error, result)=>{
+     if(error){
+      res.status(401).send(error);
+     }
+     else {
+        console.log(result);
+        res.status(200).send(result);
+        
+     }
+ 
+});
+  }
+    });
+   
   }
   else{
    
@@ -393,23 +414,14 @@ exports.AllPlaces=((req,res)=>{
        if(error){
          console.log(error);
        }else{
-      
-       console.log('changed');
-       var etat = 'L';
-                db.query('UPDATE cellule SET Status =? WHERE idCellule= ?',[etat,idCell],(error, result)=>{
-                 if(error){
-                  res.status(401).send(error);
-                 }
-                 else {
-                    console.log(result);
                     res.status(200).send(result);
                     
                  }
              
             });
          }});
-       }
-        });
+       
+       
       });
       //Crétion d'escale.
       exports.CreationEscale=((req,res)=>{
