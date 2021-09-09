@@ -73,34 +73,55 @@ const db = require('../configuration/config');
     var resultatF;
     var body = _.pick(req.body,['Niveau','Ligne','Colonne','Nconnaissement','Marque','Date_entree']);
     var places=req.body.places;
-    var val=[body.Nconnaissement,body.Marque];
-    db.query('SELECT cellule.Status FROM vehicule LEFT JOIN cellule ON cellule.idCellule=vehicule.idCellule WHERE Nconnaissement=?',[body.Nconnaissement],(error,result)=>{
-      var objh={...result};
-      var stat=objh['0'].Status;
+    db.query('SELECT cellule.Status FROM vehicule LEFT JOIN cellule ON cellule.idCellule=vehicule.idCellule WHERE Nconnaissement=? AND Niveau=?',[body.Nconnaissement,body.Niveau],(error,result)=>{
       if(error){
-       console.log(error);
+        console.log(error);
+       }
+      var objh={...result};
+      let statusTab=[]
+      let i=0;
+      for(i=0;i<Object.keys(objh);i++){
+        statusTab.push(objh[i]);
       }
-      else if(stat=="R" || stat=="O"){
-        res.status(400).json({
-          message :"ces places sont déjà résérvées !"
-        });
+      if(statusTab.length!=0){
+        
+        for(i=0;i<statusTab.length;i++){
+          if(stat=="R" || stat=="O"){
+            res.status(500).json({
+              message :"ces places sont déjà résérvées !"
+            });
+          }
+        }
       }
+      // db.query('SELECT COUNT(idVehicule) AS nbrVehicule WHERE Nconnaissement=?',[body.Nconnaissement],(error,response)=>{
+      //      if(error){
+
+      //      }
+      //      if()
+      //      else{
+
+      //      }
+      // });
       else{
-        console.log("resultat :",result);
+       
+        var val=[body.Nconnaissement,body.Marque];
         db.query('SELECT idVehicule FROM vehicule WHERE Nconnaissement=? AND Marque=? ',val, (error,result)=>{
+          console.log("result :"+result);
           var obje = {...result};     
           if(error){
     
             }
           else{
+            console.log(obje);
             let voitures=[];
-            for(i=0;i<=Object.keys(obje).length-1;i++){
+            console.log(obje)
+            for(i=0;i<Object.keys(obje).length;i++){
               let objet={...obje[i.toString()]};
                voitures.push(objet.idVehicule);
             }
             
             var j=0;
-            for(i=0; i<=places.length-1;i++){
+            for(i=0; i<places.length;i++){
               var niveau = places[i].Niveau;
               var ligne =places[i].Ligne;
               var colonne = places[i].Colonne;
@@ -114,19 +135,28 @@ const db = require('../configuration/config');
                  else{
      
                    var id =ob.insertId;
-                   
+                   console.log(voitures);
                    var voit = voitures[j];
                    j++;
+                   console.log("voiture :::::  "+voit)
                    var valeur =[id, body.Date_entree,voit];
                    db.query('UPDATE vehicule SET idCellule=?,Date_entree=? WHERE idVehicule=? ',valeur,(error,resul)=>{
-                     if(resul)res.status(200).send(resul);
-                     else if(error)res.status(401).send(error);
+                    if(error){
+                      console.log("Update : "+error);
+                      res.status(400).send('Error while updating');
+                      return error;
+           
+                    }
+                    else{
+                      console.log("Successfully Updated")
+                    }
                    })
                  
                   
                  }
               });
             }
+           res.status(200).send("Inserted Successfully")
         }
             });
       }

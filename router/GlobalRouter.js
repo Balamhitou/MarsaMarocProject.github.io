@@ -21,7 +21,7 @@ router.post('/Toservice',authenticate,crudModel.Service);//done
 
 router.get('/getVoiture/:VIN' ,authenticate,crudModel.getAll);
 router.post('/getPlace',authenticate,crudModel.getPlace);
-router.post('/reservation' ,authenticate,crudModel.Reservation);//done
+router.post('/reservation' ,crudModel.Reservation);//done
 router.post('/LibererUneVoiture',authenticate,crudModel.dateEssaie);//done
 router.post('/verificationSortie',authenticate,crudModel.PointageSortie);
 router.post('/escale',authenticate,crudModel.CreationEscale);
