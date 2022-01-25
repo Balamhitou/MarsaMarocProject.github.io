@@ -247,7 +247,7 @@ exports.Service=((req,res)=>{
 exports.Tableau=((req,res)=>{
  var body=_.pick(req.body,['Niveau','date']);
  var valeur=[body.Niveau,body.date];
- db.query('SELECT Client, Marque, VIN FROM vehicule LEFT JOIN cellule ON cellule.idCellule = vehicule.idCellule WHERE    cellule.Niveau = ? AND cellule.Status = "O" AND Date_entree <=? AND Date_sortie = "0000-00-00"GROUP BY CLIENT',valeur,(error,result)=>{
+ db.query('SELECT Client, Marque, VIN FROM vehicule LEFT JOIN cellule ON cellule.idCellule = vehicule.idCellule WHERE    cellule.Niveau = ? AND cellule.Status = "O" AND Date_entree <=? AND Date_sortie = "0000-00-00"GROUP BY ',valeur,(error,result)=>{
 if(error){
     console.log(error);
 }

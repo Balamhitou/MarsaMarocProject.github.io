@@ -80,30 +80,20 @@ const db = require('../configuration/config');
       var objh={...result};
       let statusTab=[]
       let i=0;
-      for(i=0;i<Object.keys(objh);i++){
+      for(i=0;i<Object.keys(objh).length;i++){
         statusTab.push(objh[i]);
       }
       if(statusTab.length!=0){
         
         for(i=0;i<statusTab.length;i++){
-          if(stat=="R" || stat=="O"){
+          if(statusTab[i]=="R" || statusTab[i]=="O"){
             res.status(500).json({
               message :"ces places sont déjà résérvées !"
             });
           }
         }
       }
-      // db.query('SELECT COUNT(idVehicule) AS nbrVehicule WHERE Nconnaissement=?',[body.Nconnaissement],(error,response)=>{
-      //      if(error){
-
-      //      }
-      //      if()
-      //      else{
-
-      //      }
-      // });
       else{
-       
         var val=[body.Nconnaissement,body.Marque];
         db.query('SELECT idVehicule FROM vehicule WHERE Nconnaissement=? AND Marque=? ',val, (error,result)=>{
           console.log("result :"+result);
